@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#import <Foundation/Foundation.h>
 #include <sys/utsname.h>
 
 #if __has_include(<UIKit/UIKit.h>)
@@ -45,6 +46,9 @@
 #import <GoogleUtilities/GULAppEnvironmentUtil.h>
 
 #import <objc/runtime.h>
+
+// Truthy if and only if target is running on watchOS 7.0 or later.
+#define TARGET_OS_WATCH_7_OR_LATER TARGET_OS_WATCH &&__WATCH_OS_VERSION_MAX_ALLOWED >= 70000
 
 // The kFIRService strings are only here while transitioning CoreDiagnostics from the Analytics
 // pod to a Core dependency. These symbols are not used and should be deleted after the transition.
@@ -875,14 +879,16 @@ static FIRApp *sDefaultApp;
   NSNotificationName notificationName = UIApplicationDidBecomeActiveNotification;
 #elif TARGET_OS_OSX
   NSNotificationName notificationName = NSApplicationDidBecomeActiveNotification;
-#elif TARGET_OS_WATCH
+#elif TARGET_OS_WATCH_7_OR_LATER
   NSNotificationName notificationName = WKApplicationDidBecomeActiveNotification;
 #endif
 
+#if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_OSX || TARGET_OS_WATCH_7_OR_LATER
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(appDidBecomeActive:)
                                                name:notificationName
                                              object:nil];
+#endif
 }
 
 - (void)appDidBecomeActive:(NSNotification *)notification {

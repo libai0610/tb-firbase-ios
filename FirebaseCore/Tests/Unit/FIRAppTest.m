@@ -36,6 +36,9 @@
 #import "FirebaseCore/Sources/FIRAnalyticsConfiguration.h"
 #import "SharedTestUtilities/FIROptionsMock.h"
 
+// Truthy if and only if target is running on watchOS 7.0 or later.
+#define TARGET_OS_WATCH_7_OR_LATER TARGET_OS_WATCH &&__WATCH_OS_VERSION_MAX_ALLOWED >= 70000
+
 NSString *const kFIRTestAppName1 = @"test_app_name_1";
 NSString *const kFIRTestAppName2 = @"test-app-name-2";
 
@@ -839,6 +842,7 @@ NSString *const kFIRTestAppName2 = @"test-app-name-2";
 
 #pragma mark - Core Telemetry
 
+#if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_OSX || TARGET_OS_WATCH_7_OR_LATER
 - (void)testCoreDiagnosticsLoggedWhenAppDidBecomeActive {
   FIRApp *app = [self createConfiguredAppWithName:NSStringFromSelector(_cmd)];
   [self expectCoreDiagnosticsDataLogWithOptions:app.options];
@@ -856,6 +860,7 @@ NSString *const kFIRTestAppName2 = @"test-app-name-2";
                                          object:nil];
   OCMVerifyAll(self.mockHeartbeatLogger);
 }
+#endif  // TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_OSX || TARGET_OS_WATCH_7_OR_LATER
 
 #pragma mark - private
 
